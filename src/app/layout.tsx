@@ -17,9 +17,6 @@ export const metadata: Metadata = {
   },
   description: STORE_CONFIG.storeDescription,
   keywords: ['artificial jewellery', 'beauty products', 'Pakistan', 'online shopping', 'necklace', 'earrings', 'makeup', 'skincare'],
-  alternates: {
-    canonical: 'https://www.noorebeautyjewel.store',
-  },
   openGraph: {
     title: `${STORE_CONFIG.storeName} - ${STORE_CONFIG.storeTagline}`,
     description: STORE_CONFIG.storeDescription,
