@@ -38,7 +38,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
         <div className="text-6xl mb-4">🛒</div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-3">Your cart is currently empty</h2>
+        <h1 className="text-2xl font-bold text-gray-800 mb-3">Your cart is currently empty</h1>
         <Link href="/products" className="btn-primary">Explore Products</Link>
       </div>
     )

@@ -154,7 +154,7 @@ export const PRODUCTS: Product[] = [
     price: 750,
     originalPrice: 1000,
     images: [
-      "https://images.unsplash.com/photo-1586495777744-4e6232bf2453?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500&h=500&fit=crop",
     ],
     description: "Premium quality long-lasting lipstick in beautiful rose gold shades. Moisturizing formula jo lips ko soft rakhti hai. 12-hour wear guarantee. Set of 3 shades.",
     rating: 4.6,
@@ -296,7 +296,7 @@ export const PRODUCTS: Product[] = [
     price: 1150,
     originalPrice: 1600,
     images: [
-      "https://images.unsplash.com/photo-1586495777744-4e6232bf2453?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500&h=500&fit=crop",
     ],
     description: "Pack of 4 smudge-proof matte liquid lipsticks in trending nude and red shades. Lightweight and non-drying formula.",
     rating: 4.6,
@@ -332,7 +332,7 @@ export const PRODUCTS: Product[] = [
     price: 1350,
     originalPrice: 1800,
     images: [
-      "https://images.unsplash.com/photo-1608248597359-009d1e39eb1b?w=500&h=500&fit=crop",
+      "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=500&h=500&fit=crop",
     ],
     description: "Deep hydration formula with pure hyaluronic acid. Skin ko plump, fresh aur youthful glow deti hai.",
     rating: 4.8,

@@ -18,7 +18,7 @@ export default function CartPage() {
         <div className="w-24 h-24 rounded-full bg-primary-100 flex items-center justify-center text-4xl mb-6 shadow-inner animate-pulse">
           🛒
         </div>
-        <h2 className="text-3xl font-extrabold text-gray-900 mb-3">Your Shopping Cart is Empty</h2>
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-3">Your Shopping Cart is Empty</h1>
         <p className="text-gray-500 mb-8 max-w-md text-base leading-relaxed">
           Looks like you haven't added anything to your cart yet. Explore our stunning artificial jewellery and beauty collections today!
         </p>
