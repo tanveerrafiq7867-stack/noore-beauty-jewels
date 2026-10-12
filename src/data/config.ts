@@ -8,11 +8,11 @@ export const STORE_CONFIG = {
   storeDescription: "Pakistan's premium collection of artificial jewellery and beauty products. Perfect accessories and cosmetics for every occasion.",
 
   // WhatsApp number
-  whatsappNumber: "923286353273",
+  whatsappNumber: "923208500958",
 
   // Contact info
   email: "info@noorebeautyjewels.com",
-  phone: "+92 328 6353273",
+  phone: "+92 320 8500958",
   address: "Bahawalpur, Pakistan",
 
   // Social media (ready to be updated anytime)

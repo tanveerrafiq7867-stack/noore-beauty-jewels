@@ -180,7 +180,7 @@ export default function CheckoutPage() {
                     </label>
                     <input
                       type="tel"
-                      placeholder="e.g. 0328-6353273"
+                      placeholder="e.g. 0320-8500958"
                       value={form.phone}
                       onChange={e => setForm({ ...form, phone: e.target.value })}
                       className={`form-input ${errors.phone ? 'border-red-400 focus:ring-red-300' : ''}`}
