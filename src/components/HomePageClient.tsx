@@ -382,40 +382,35 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===== LUXURY CATEGORIES ===== */}
-      <section className="py-16 px-4 bg-gradient-to-b from-white via-amber-50/20 to-white">
+      {/* ===== LUXURY CATEGORIES (GRACEFUL TEXT) ===== */}
+      <section className="py-14 px-4 bg-gradient-to-b from-white via-stone-50/40 to-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <span className="text-xs uppercase tracking-widest font-semibold text-amber-700 bg-amber-50 border border-amber-200/60 px-3.5 py-1 rounded-full inline-block mb-2">
-              Haute Joaillerie &amp; Beauty
+          <div className="text-center mb-8">
+            <span className="text-[11px] uppercase tracking-[0.25em] font-medium text-amber-800 bg-amber-50/80 border border-amber-200/60 px-4 py-1 rounded-full inline-block mb-2.5">
+              Curated Collections
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-gray-900 tracking-tight">
               Shop by Category
             </h2>
-            <p className="text-sm text-gray-500 mt-2 max-w-lg mx-auto">
-              Curated collections of exquisite bridal jewellery, fine accessories, and premium skincare
+            <p className="text-sm text-gray-500 mt-2 max-w-lg mx-auto font-light">
+              Explore our exquisite range of handcrafted jewellery, beauty essentials, and skincare
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
-            {CATEGORIES.filter(c => c.id !== 'all').map(cat => {
-              const theme = CATEGORY_THEMES[cat.id] || CATEGORY_THEMES.all
-              return (
-                <Link
-                  key={cat.id}
-                  href={`/products?category=${cat.id}`}
-                  className={`flex flex-col items-center gap-3 p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group border border-gray-100 bg-gradient-to-b ${theme.cardBg} ${theme.hoverBorder} text-center relative overflow-hidden`}
-                >
-                  {/* Vibrant Gemstone Gradient Circle */}
-                  <div className={`w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-tr ${theme.gradient} flex items-center justify-center text-white shadow-lg ${theme.shadow} border-2 border-white ring-2 ring-black/5 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-2xl transition-all duration-300`}>
-                    <LuxuryCategoryIcon categoryId={cat.id} className="w-8 h-8 drop-shadow-md text-white" />
-                  </div>
-                  {/* Category Name */}
-                  <span className={`text-xs sm:text-sm font-serif font-bold text-gray-900 ${theme.textColor} transition-colors leading-tight`}>
-                    {cat.name}
-                  </span>
-                </Link>
-              )
-            })}
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-3.5">
+            {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+              <Link
+                key={cat.id}
+                href={`/products?category=${cat.id}`}
+                className="group relative flex flex-col items-center justify-center p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/80 hover:border-gray-900 hover:bg-gray-900 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center"
+              >
+                <span className="font-serif text-sm sm:text-[15px] font-semibold text-gray-900 group-hover:text-white transition-colors duration-300 leading-snug tracking-wide">
+                  {cat.name}
+                </span>
+                <span className="text-[10px] uppercase tracking-widest text-amber-700/80 group-hover:text-amber-300 transition-colors duration-300 mt-1.5 font-medium">
+                  View All →
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

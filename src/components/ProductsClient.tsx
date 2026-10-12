@@ -152,25 +152,22 @@ function ProductsContent() {
                 Collections &amp; Categories
               </h3>
               <div className="space-y-1.5">
-                {CATEGORIES.map(cat => {
-                  const theme = CATEGORY_THEMES[cat.id] || CATEGORY_THEMES.all
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all text-left ${
-                        selectedCategory === cat.id
-                          ? 'bg-amber-100/70 text-gray-900 font-bold shadow-xs ring-1 ring-amber-300'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
-                    >
-                      <span className={`w-7 h-7 rounded-full bg-gradient-to-tr ${theme.gradient} flex items-center justify-center shrink-0 text-white shadow-xs`}>
-                        <LuxuryCategoryIcon categoryId={cat.id} className="w-4 h-4 text-white" />
-                      </span>
-                      <span className="truncate">{cat.name}</span>
-                    </button>
-                  )
-                })}
+                {CATEGORIES.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all text-left font-serif ${
+                      selectedCategory === cat.id
+                        ? 'bg-gray-900 text-white font-semibold shadow-xs'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 font-medium'
+                    }`}
+                  >
+                    <span className="tracking-wide">{cat.name}</span>
+                    {selectedCategory === cat.id && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
 
