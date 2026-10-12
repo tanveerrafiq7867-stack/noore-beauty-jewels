@@ -1,23 +1,34 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, Star, Shield, Truck, RotateCcw, Headphones, ChevronRight, ChevronLeft, Instagram, Facebook } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
-import { PRODUCTS } from '@/data/products'
+import { PRODUCTS, Product } from '@/data/products'
+import { fetchProducts } from '@/lib/products'
 import { CATEGORIES, STORE_CONFIG } from '@/data/config'
 
 export default function HomePage() {
+  const [productList, setProductList] = useState<Product[]>(PRODUCTS)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 4
-  const totalPages = 5 // Exactly 5 working pages as requested
+
+  useEffect(() => {
+    fetchProducts().then(data => {
+      if (data && data.length > 0) {
+        setProductList(data)
+      }
+    })
+  }, [])
+
+  const totalPages = Math.max(1, Math.ceil(productList.length / itemsPerPage))
 
   // Get products for current page (4 products per page)
   const startIndex = (currentPage - 1) * itemsPerPage
-  const paginatedProducts = PRODUCTS.slice(startIndex, startIndex + itemsPerPage)
+  const paginatedProducts = productList.slice(startIndex, startIndex + itemsPerPage)
 
-  const newProducts = PRODUCTS.filter(p => p.isNew).slice(0, 4)
+  const newProducts = productList.filter(p => p.isNew).slice(0, 4)
 
   const handlePageChange = (pageNum: number) => {
     setCurrentPage(pageNum)

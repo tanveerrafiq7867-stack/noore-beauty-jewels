@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useMemo, Suspense } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
-import { PRODUCTS } from '@/data/products'
+import { PRODUCTS, Product } from '@/data/products'
+import { fetchProducts } from '@/lib/products'
 import { CATEGORIES } from '@/data/config'
 
 function ProductsContent() {
@@ -13,6 +14,7 @@ function ProductsContent() {
   const initialFilter = searchParams.get('filter') || ''
   const initialSearch = searchParams.get('search') || ''
 
+  const [allProducts, setAllProducts] = useState<Product[]>(PRODUCTS)
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [searchQuery, setSearchQuery] = useState(initialSearch)
   const [sortBy, setSortBy] = useState('featured')
@@ -22,10 +24,18 @@ function ProductsContent() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 4
 
-  const maxPrice = Math.max(...PRODUCTS.map(p => p.price))
+  useEffect(() => {
+    fetchProducts().then(data => {
+      if (data && data.length > 0) {
+        setAllProducts(data)
+      }
+    })
+  }, [])
+
+  const maxPrice = Math.max(...allProducts.map(p => p.price))
 
   const filteredProducts = useMemo(() => {
-    let products = [...PRODUCTS]
+    let products = [...allProducts]
 
     // Category filter
     if (selectedCategory !== 'all') {

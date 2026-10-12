@@ -1,11 +1,12 @@
-﻿'use client'
+'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { ShoppingCart, Star, ArrowLeft, Package, Shield, Truck, ChevronRight, Check } from 'lucide-react'
-import { PRODUCTS } from '@/data/products'
+import { PRODUCTS, Product } from '@/data/products'
+import { fetchProductById } from '@/lib/products'
 import { STORE_CONFIG } from '@/data/config'
 import { useCartStore } from '@/store/cartStore'
 import ProductCard from '@/components/ProductCard'
@@ -13,21 +14,29 @@ import ProductCard from '@/components/ProductCard'
 export default function ProductDetailPage() {
   const params = useParams()
   const productId = Number(params.id)
-  const product = PRODUCTS.find(p => p.id === productId)
+  const [product, setProduct] = useState<Product | undefined>(() => PRODUCTS.find(p => p.id === productId))
+  const [loading, setLoading] = useState(!product)
   const addToCart = useCartStore(state => state.addToCart)
 
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
 
+  useEffect(() => {
+    fetchProductById(productId).then(p => {
+      if (p) setProduct(p)
+      setLoading(false)
+    })
+  }, [productId])
+
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
-        <div className="text-6xl mb-4">≡ƒÿö</div>
+        <div className="text-6xl mb-4">😔</div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Product nahi mila</h2>
         <p className="text-gray-500 mb-6">Ye product exist nahi karta ya remove kar diya gaya hai.</p>
         <Link href="/products" className="btn-primary">
-          ΓåÉ Wapas Products
+          ← Wapas Products
         </Link>
       </div>
     )
