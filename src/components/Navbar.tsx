@@ -78,22 +78,22 @@ export default function Navbar() {
       </div>
 
       {/* Main Navbar */}
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           
           {/* Logo / Brand Heading (Simple, Graceful & Luxury Minimalist) */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink min-w-0">
             {/* Monogram Badge (Ready for custom logo image later) */}
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gray-900 group-hover:bg-primary-900 text-white flex items-center justify-center font-serif font-bold text-base sm:text-lg tracking-wider shadow-sm transition-all duration-200 group-hover:scale-105 shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 group-hover:bg-primary-900 text-white flex items-center justify-center font-serif font-bold text-xs sm:text-base tracking-wider shadow-sm transition-all duration-200 group-hover:scale-105 shrink-0">
               NB
             </div>
 
             {/* Graceful Brand Title */}
-            <div className="flex flex-col">
-              <span className="font-serif text-2xl sm:text-[27px] font-semibold text-gray-900 tracking-tight leading-none group-hover:text-primary-700 transition-colors">
+            <div className="flex flex-col min-w-0">
+              <span className="font-serif text-[17px] sm:text-2xl lg:text-[27px] font-semibold text-gray-900 tracking-tight leading-none group-hover:text-primary-700 transition-colors whitespace-nowrap">
                 Noore <span className="font-normal italic text-gray-700">Beauty &amp; Jewels</span>
               </span>
-              <span className="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.2em] text-gray-400 mt-1">
+              <span className="text-[8.5px] sm:text-[10px] lg:text-[11px] font-medium uppercase tracking-wider sm:tracking-[0.2em] text-gray-400 mt-0.5 sm:mt-1 whitespace-nowrap">
                 Jewellery &amp; Beauty Products
               </span>
             </div>
@@ -109,11 +109,11 @@ export default function Navbar() {
           </div>
 
           {/* Right Action Icons */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
             {/* Functional Search Toggle Button */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className={`p-2.5 rounded-full transition-all duration-200 ${
+              className={`p-2 sm:p-2.5 rounded-full transition-all duration-200 ${
                 searchOpen
                   ? 'bg-primary-600 text-white shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-primary-50 hover:text-primary-600'
@@ -121,18 +121,18 @@ export default function Navbar() {
               aria-label="Search products"
               title="Search products"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
             {/* Shopping Cart Button */}
             <Link
               href="/cart"
-              className="relative p-2.5 rounded-full bg-gray-100 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+              className="relative p-2 sm:p-2.5 rounded-full bg-gray-100 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
               aria-label="Shopping Cart"
             >
-              <ShoppingCart className="w-5 h-5 text-primary-600" />
+              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold shadow animate-bounce">
+                <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-[10px] sm:text-xs w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center font-bold shadow animate-bounce">
                   {totalItems > 9 ? '9+' : totalItems}
                 </span>
               )}
@@ -140,7 +140,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Toggle Button */}
             <button
-              className="lg:hidden p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+              className="lg:hidden p-2 sm:p-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Menu"
             >

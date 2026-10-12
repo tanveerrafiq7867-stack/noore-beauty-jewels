@@ -48,7 +48,7 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-2 bg-primary-100 text-primary-700 text-sm font-semibold px-4 py-2 rounded-full mb-6 shadow-sm animate-pulse-glow">
               ✨ Pakistan's Premium Jewellery & Beauty Store
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
               Exquisite{' '}
               <span className="text-gradient">Artificial Jewellery</span>
               {' '}&{' '}
