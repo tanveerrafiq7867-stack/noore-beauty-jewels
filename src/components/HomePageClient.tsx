@@ -8,7 +8,7 @@ import ProductCard from '@/components/ProductCard'
 import { PRODUCTS, Product } from '@/data/products'
 import { fetchProducts } from '@/lib/products'
 import { CATEGORIES, STORE_CONFIG } from '@/data/config'
-import { LuxuryCategoryIcon } from '@/components/CategoryIcons'
+import { LuxuryCategoryIcon, CATEGORY_THEMES } from '@/components/CategoryIcons'
 
 const HERO_SLIDES = [
   {
@@ -16,7 +16,7 @@ const HERO_SLIDES = [
     items: [
       {
         title: 'Kundan Bridal Choker Set',
-        price: 'Rs. 3,850',
+        price: 'Rs. 2,500',
         badge: '✨ Best Seller',
         image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&h=500&fit=crop',
       },
@@ -28,13 +28,13 @@ const HERO_SLIDES = [
       },
       {
         title: '24K Gold Plated Bangles',
-        price: 'Rs. 2,400',
+        price: 'Rs. 850',
         badge: '👑 Royal Pick',
         image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&h=400&fit=crop',
       },
       {
         title: 'Gold Glow Radiance Serum',
-        price: 'Rs. 1,650',
+        price: 'Rs. 1,500',
         badge: '⭐ 4.9 Rating',
         image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&h=500&fit=crop',
       },
@@ -44,26 +44,26 @@ const HERO_SLIDES = [
     tag: 'High Jewellery & Polki',
     items: [
       {
-        title: 'Emerald Chandelier Jhumkas',
-        price: 'Rs. 1,950',
+        title: 'Traditional Jhumka Earrings',
+        price: 'Rs. 750',
         badge: '💎 Handcrafted',
         image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?w=600&h=500&fit=crop',
       },
       {
-        title: 'Botanical Vitamin C Serum',
-        price: 'Rs. 1,450',
+        title: 'Whitening Face Wash',
+        price: 'Rs. 550',
         badge: '🌿 Natural Glow',
-        image: 'https://images.unsplash.com/photo-1608248597359-54523c14a408?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=600&h=400&fit=crop',
       },
       {
-        title: 'Solitaire Crystal Ring',
-        price: 'Rs. 1,200',
+        title: 'Crystal Stone Finger Ring',
+        price: 'Rs. 350',
         badge: '💍 Top Rated',
         image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&h=400&fit=crop',
       },
       {
         title: 'Pearl Choker Necklace',
-        price: 'Rs. 2,800',
+        price: 'Rs. 4,500',
         badge: '✨ Exclusive',
         image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=500&fit=crop',
       },
@@ -73,28 +73,28 @@ const HERO_SLIDES = [
     tag: 'Glamour & Luxury Cosmetics',
     items: [
       {
-        title: 'Pro Shimmer Eye Palette',
-        price: 'Rs. 1,850',
-        badge: '🎨 18 Shades',
+        title: 'Eye Shadow Palette (16 Colors)',
+        price: 'Rs. 1,200',
+        badge: '🎨 16 Shades',
         image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=600&h=500&fit=crop',
       },
       {
-        title: 'Zirconia Crystal Bangle',
-        price: 'Rs. 2,100',
+        title: 'Pearl Drop Earrings',
+        price: 'Rs. 650',
         badge: '✨ 24K Shine',
-        image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1535556116002-6281ff3e9f36?w=600&h=400&fit=crop',
       },
       {
-        title: 'Luxury Floral Eau de Parfum',
-        price: 'Rs. 2,650',
+        title: 'Rose Gold Lipstick Collection',
+        price: 'Rs. 750',
         badge: '🌸 Long Lasting',
-        image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=600&h=400&fit=crop',
       },
       {
-        title: 'Royal Antique Jhumkay',
-        price: 'Rs. 1,750',
+        title: 'Gold Plated Choker Set',
+        price: 'Rs. 1,200',
         badge: '👑 Heritage',
-        image: 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?w=600&h=500&fit=crop',
+        image: 'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=600&h=500&fit=crop',
       },
     ],
   },
@@ -102,26 +102,26 @@ const HERO_SLIDES = [
     tag: 'Festive & Bridal Glow',
     items: [
       {
-        title: 'Bridal Maatha Patti & Teeka',
-        price: 'Rs. 2,250',
+        title: 'Complete Bridal Set',
+        price: 'Rs. 4,500',
         badge: '👰 Bridal Pick',
-        image: 'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=600&h=500&fit=crop',
+        image: 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=600&h=500&fit=crop',
       },
       {
-        title: 'Rose Lip & Cheek Tint',
-        price: 'Rs. 750',
-        badge: '💋 All-Day Stain',
-        image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=600&h=400&fit=crop',
+        title: 'Floral Hair Pins Set',
+        price: 'Rs. 450',
+        badge: '🌸 Floral Charm',
+        image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=400&fit=crop',
       },
       {
-        title: 'Traditional Polki Mala Set',
-        price: 'Rs. 3,450',
-        badge: '💎 Hand Inlaid',
-        image: 'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=600&h=400&fit=crop',
+        title: 'Antique Bangles Set (6 Pcs)',
+        price: 'Rs. 850',
+        badge: '💎 Hand Carved',
+        image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&h=400&fit=crop',
       },
       {
-        title: 'Hyaluronic Hydrating Elixir',
-        price: 'Rs. 1,550',
+        title: 'Moisturizing Body Lotion',
+        price: 'Rs. 680',
         badge: '💧 Dewy Finish',
         image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&h=500&fit=crop',
       },
@@ -397,20 +397,25 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
-            {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
-              <Link
-                key={cat.id}
-                href={`/products?category=${cat.id}`}
-                className="flex flex-col items-center gap-2.5 p-4 bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group border border-gray-100 hover:border-amber-300 text-center"
-              >
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-50 via-rose-50/30 to-amber-100/40 border border-amber-200/80 flex items-center justify-center text-amber-800 shadow-[0_2px_8px_rgba(217,119,6,0.08)] group-hover:scale-110 group-hover:border-amber-400 group-hover:shadow-[0_4px_16px_rgba(217,119,6,0.22)] group-hover:bg-amber-100/40 transition-all duration-300">
-                  <LuxuryCategoryIcon categoryId={cat.id} className="w-7 h-7 stroke-amber-800 group-hover:stroke-amber-950 transition-colors" />
-                </div>
-                <span className="text-xs font-serif font-semibold text-gray-800 group-hover:text-amber-800 transition-colors leading-tight">
-                  {cat.name}
-                </span>
-              </Link>
-            ))}
+            {CATEGORIES.filter(c => c.id !== 'all').map(cat => {
+              const theme = CATEGORY_THEMES[cat.id] || CATEGORY_THEMES.all
+              return (
+                <Link
+                  key={cat.id}
+                  href={`/products?category=${cat.id}`}
+                  className={`flex flex-col items-center gap-3 p-4 sm:p-5 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group border border-gray-100 bg-gradient-to-b ${theme.cardBg} ${theme.hoverBorder} text-center relative overflow-hidden`}
+                >
+                  {/* Vibrant Gemstone Gradient Circle */}
+                  <div className={`w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-tr ${theme.gradient} flex items-center justify-center text-white shadow-lg ${theme.shadow} border-2 border-white ring-2 ring-black/5 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-2xl transition-all duration-300`}>
+                    <LuxuryCategoryIcon categoryId={cat.id} className="w-8 h-8 drop-shadow-md text-white" />
+                  </div>
+                  {/* Category Name */}
+                  <span className={`text-xs sm:text-sm font-serif font-bold text-gray-900 ${theme.textColor} transition-colors leading-tight`}>
+                    {cat.name}
+                  </span>
+                </Link>
+              )
+            })}
           </div>
         </div>
       </section>

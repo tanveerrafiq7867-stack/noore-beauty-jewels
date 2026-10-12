@@ -7,7 +7,7 @@ import ProductCard from '@/components/ProductCard'
 import { PRODUCTS, Product } from '@/data/products'
 import { fetchProducts } from '@/lib/products'
 import { CATEGORIES } from '@/data/config'
-import { LuxuryCategoryIcon } from '@/components/CategoryIcons'
+import { LuxuryCategoryIcon, CATEGORY_THEMES } from '@/components/CategoryIcons'
 
 function ProductsContent() {
   const searchParams = useSearchParams()
@@ -151,23 +151,26 @@ function ProductsContent() {
               <h3 className="font-serif font-bold text-gray-900 mb-4 flex items-center gap-2">
                 Collections &amp; Categories
               </h3>
-              <div className="space-y-1">
-                {CATEGORIES.map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
-                      selectedCategory === cat.id
-                        ? 'bg-amber-100/60 text-amber-900 font-semibold shadow-xs'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
-                  >
-                    <span className="w-5 h-5 flex items-center justify-center shrink-0 text-amber-800">
-                      <LuxuryCategoryIcon categoryId={cat.id} className="w-4 h-4 stroke-current" />
-                    </span>
-                    <span className="truncate">{cat.name}</span>
-                  </button>
-                ))}
+              <div className="space-y-1.5">
+                {CATEGORIES.map(cat => {
+                  const theme = CATEGORY_THEMES[cat.id] || CATEGORY_THEMES.all
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all text-left ${
+                        selectedCategory === cat.id
+                          ? 'bg-amber-100/70 text-gray-900 font-bold shadow-xs ring-1 ring-amber-300'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      }`}
+                    >
+                      <span className={`w-7 h-7 rounded-full bg-gradient-to-tr ${theme.gradient} flex items-center justify-center shrink-0 text-white shadow-xs`}>
+                        <LuxuryCategoryIcon categoryId={cat.id} className="w-4 h-4 text-white" />
+                      </span>
+                      <span className="truncate">{cat.name}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
