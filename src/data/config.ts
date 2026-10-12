@@ -11,7 +11,7 @@ export const STORE_CONFIG = {
   whatsappNumber: "923208500958",
 
   // Contact info
-  email: "info@noorebeautyjewels.com",
+  email: "tanveerrafiq499@gmail.com",
   phone: "+92 320 8500958",
   address: "Bahawalpur, Pakistan",
 

@@ -17,6 +17,21 @@ interface OrderForm {
   notes: string
 }
 
+interface SubmittedOrder {
+  orderNumber: string
+  customer: OrderForm
+  items: Array<{
+    name: string
+    quantity: number
+    price: number
+    sku?: string
+  }>
+  subtotal: number
+  deliveryCharges: number
+  grandTotal: number
+  date: string
+}
+
 export default function CheckoutPage() {
   const { items, getTotalPrice, clearCart } = useCartStore()
   const totalPrice = getTotalPrice()
@@ -25,6 +40,8 @@ export default function CheckoutPage() {
 
   const [status, setStatus] = useState<OrderStatus>('form')
   const [orderNumber, setOrderNumber] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrder | null>(null)
   const [form, setForm] = useState<OrderForm>({
     name: '',
     phone: '',
@@ -54,83 +71,135 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!validate()) return
+    if (!validate() || isSubmitting) return
+
+    setIsSubmitting(true)
 
     // Generate unique order number
     const ordNo = `NBJ-${Date.now().toString().slice(-6)}`
     setOrderNumber(ordNo)
 
-    // Build WhatsApp message
-    const message = encodeURIComponent(
-      `🛍️ *NEW ORDER - ${ordNo}*\n\n` +
-      `👤 *Customer Information:*\n` +
-      `Name: ${form.name}\n` +
-      `Phone/WhatsApp: ${form.phone}\n` +
-      `City: ${form.city}\n` +
-      `Address: ${form.address}\n` +
-      (form.notes ? `Special Notes: ${form.notes}\n` : '') +
-      `\n📦 *Order Items:*\n` +
-      items.map(({ product, quantity }) =>
-        `• ${product.name}\n  Qty: ${quantity} × Rs.${product.price} = Rs.${product.price * quantity}\n  SKU: ${product.sku || 'N/A'}`
-      ).join('\n\n') +
-      `\n\n💰 *Payment Summary:*\n` +
-      `Subtotal: Rs. ${totalPrice.toLocaleString()}\n` +
-      `Delivery: ${deliveryCharges === 0 ? 'FREE' : `Rs. ${deliveryCharges}`}\n` +
-      `*Grand Total: Rs. ${grandTotal.toLocaleString()}*\n\n` +
-      `💵 Payment Method: Cash on Delivery (COD)\n\n` +
-      `Please confirm and dispatch my order! 🙏`
-    )
+    const orderData: SubmittedOrder = {
+      orderNumber: ordNo,
+      customer: { ...form },
+      items: items.map(({ product, quantity }) => ({
+        name: product.name,
+        quantity,
+        price: product.price,
+        sku: product.sku || 'N/A',
+      })),
+      subtotal: totalPrice,
+      deliveryCharges,
+      grandTotal,
+      date: new Date().toISOString(),
+    }
 
-    // Open WhatsApp
-    window.open(`https://wa.me/${STORE_CONFIG.whatsappNumber}?text=${message}`, '_blank')
+    setSubmittedOrder(orderData)
 
-    // Show success
+    // Save order in localStorage so Admin Dashboard can view it
+    try {
+      const existing = JSON.parse(localStorage.getItem('noore_store_orders') || '[]')
+      localStorage.setItem('noore_store_orders', JSON.stringify([orderData, ...existing]))
+    } catch (err) {
+      console.warn('LocalStorage save error:', err)
+    }
+
+    // Send order to API route to notify via email to tanveerrafiq499@gmail.com
+    try {
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      }).catch(apiErr => console.warn('Order API dispatch warning:', apiErr))
+    } catch (err) {
+      console.warn('Order dispatch warning:', err)
+    }
+
+    // Clear cart and switch to submitted view (Customer stays on the website!)
     clearCart()
     setStatus('submitted')
+    setIsSubmitting(false)
   }
 
   if (status === 'submitted') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
-        <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-xl text-center border border-gray-100">
-          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-green-500" />
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">Order Received! 🎉</h2>
-          <p className="text-gray-600 mb-3 text-sm">
-            Your Order Tracking Number: <strong className="text-primary-600 font-mono text-base font-bold">#{orderNumber}</strong>
-          </p>
-          <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-            Your order details have been forwarded to our WhatsApp. If WhatsApp did not open automatically, please click below to confirm your order!
-          </p>
-
-          <div className="grid grid-cols-2 gap-3 mb-8">
-            <div className="bg-gray-50 rounded-2xl p-4 text-center">
-              <Package className="w-6 h-6 text-primary-600 mx-auto mb-2" />
-              <p className="text-xs font-semibold text-gray-700">Order Processing</p>
-            </div>
-            <div className="bg-gray-50 rounded-2xl p-4 text-center">
-              <Truck className="w-6 h-6 text-gold-500 mx-auto mb-2" />
-              <p className="text-xs font-semibold text-gray-700">COD Delivery</p>
-            </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+        <div className="max-w-xl w-full bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-gray-100 text-center">
+          <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-6 shadow-inner">
+            <CheckCircle className="w-10 h-10" />
           </div>
 
-          <div className="space-y-3">
-            <a
-              href={`https://wa.me/${STORE_CONFIG.whatsappNumber}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 rounded-full transition-colors shadow-md"
+          <span className="inline-block text-xs uppercase tracking-widest font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3.5 py-1 rounded-full mb-3">
+            Order Placed Successfully
+          </span>
+
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">
+            Thank You for Your Order! 🎉
+          </h2>
+
+          <p className="text-gray-600 mb-6 text-sm">
+            Tracking Number:{' '}
+            <strong className="text-primary-700 font-mono text-base font-bold bg-primary-50 px-2.5 py-1 rounded-md border border-primary-200">
+              #{orderNumber}
+            </strong>
+          </p>
+
+          {/* Order Details Summary Card */}
+          {submittedOrder && (
+            <div className="bg-stone-50 rounded-2xl p-4 sm:p-5 text-left mb-6 border border-stone-200/70 text-xs sm:text-sm">
+              <div className="font-bold text-gray-800 border-b border-stone-200 pb-2 mb-3 flex items-center justify-between">
+                <span>Order Summary</span>
+                <span className="text-emerald-700 font-semibold">Cash on Delivery (COD)</span>
+              </div>
+
+              <div className="space-y-1.5 mb-3 text-gray-600">
+                <p><strong>Customer:</strong> {submittedOrder.customer.name}</p>
+                <p><strong>Phone:</strong> {submittedOrder.customer.phone}</p>
+                <p><strong>Delivery Address:</strong> {submittedOrder.customer.address}, {submittedOrder.customer.city}</p>
+                {submittedOrder.customer.notes && (
+                  <p><strong>Notes:</strong> {submittedOrder.customer.notes}</p>
+                )}
+              </div>
+
+              <div className="border-t border-stone-200 pt-2.5 space-y-1.5">
+                {submittedOrder.items.map((it, idx) => (
+                  <div key={idx} className="flex justify-between text-gray-700">
+                    <span>• {it.name} <span className="text-gray-400">×{it.quantity}</span></span>
+                    <span className="font-semibold">Rs. {(it.price * it.quantity).toLocaleString()}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between font-bold text-gray-900 pt-2 border-t border-stone-200 text-sm">
+                  <span>Grand Total:</span>
+                  <span className="text-primary-800 font-mono">Rs. {submittedOrder.grandTotal.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 mb-6 text-left flex items-start gap-3">
+            <span className="text-xl">📞</span>
+            <div className="text-xs text-amber-950 leading-relaxed">
+              <strong>Order Confirmation Notice:</strong>
+              <p className="mt-0.5 text-amber-900/80">
+                Hamari customer care team aapke diye gaye phone number par WhatsApp ya Call ke zariye rabta karegi aur parcel dispatch karegi. Delivery time <strong>2 se 4 working days</strong> hai.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link
+              href="/products"
+              className="flex-1 btn-primary py-3 rounded-full text-center font-bold text-sm shadow-md"
             >
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-              </svg>
-              Confirm on WhatsApp
-            </a>
-            <Link href="/" className="w-full flex items-center justify-center text-gray-700 hover:text-gray-900 font-semibold py-3 rounded-full border border-gray-200 hover:border-gray-300 transition-colors">
-              Return to Home
+              Continue Shopping
+            </Link>
+            <Link
+              href="/"
+              className="flex-1 py-3 rounded-full text-center font-bold text-sm border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              Back to Home
             </Link>
           </div>
         </div>
@@ -253,13 +322,14 @@ export default function CheckoutPage() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="btn-primary w-full py-4 text-base sm:text-lg font-bold flex items-center justify-center gap-2.5 shadow-xl hover:shadow-2xl hover:scale-101 transition-all"
+                disabled={isSubmitting}
+                className="btn-primary w-full py-4 text-base sm:text-lg font-bold flex items-center justify-center gap-2.5 shadow-xl hover:shadow-2xl hover:scale-101 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <ShieldCheck className="w-5 h-5" />
-                Place Order & Confirm via WhatsApp
+                {isSubmitting ? 'Placing Order...' : 'Confirm & Place Order (Cash on Delivery)'}
               </button>
               <p className="text-xs text-gray-500 text-center font-medium">
-                After placing the order, WhatsApp will open with your complete invoice details for direct confirmation.
+                🔒 100% Safe & Secure. Pay Cash on Delivery when your parcel arrives at your doorstep!
               </p>
             </form>
           </div>

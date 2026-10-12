@@ -19,7 +19,11 @@ import {
   LogOut, 
   ExternalLink,
   Search,
-  Sparkles
+  Sparkles,
+  ShoppingBag,
+  Phone,
+  Copy,
+  Check
 } from 'lucide-react'
 
 const DEFAULT_PIN = 'noore786'
@@ -41,14 +45,38 @@ interface ProductItem {
   tags?: string[]
 }
 
+interface AdminOrder {
+  orderNumber: string
+  customer: {
+    name: string
+    phone: string
+    address: string
+    city: string
+    notes?: string
+  }
+  items: Array<{
+    name: string
+    quantity: number
+    price: number
+    sku?: string
+  }>
+  subtotal: number
+  deliveryCharges: number
+  grandTotal: number
+  date: string
+  status?: string
+}
+
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [pinInput, setPinInput] = useState('')
   const [pinError, setPinError] = useState(false)
 
-  // Active tab: 'list' | 'add'
-  const [activeTab, setActiveTab] = useState<'list' | 'add'>('list')
+  // Active tab: 'orders' | 'list' | 'add'
+  const [activeTab, setActiveTab] = useState<'orders' | 'list' | 'add'>('orders')
   const [products, setProducts] = useState<ProductItem[]>([])
+  const [orders, setOrders] = useState<AdminOrder[]>([])
+  const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
@@ -81,6 +109,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (isAuthenticated) {
       loadProducts()
+      loadOrders()
     }
   }, [isAuthenticated])
 
@@ -126,6 +155,68 @@ export default function AdminDashboard() {
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message })
     setTimeout(() => setNotification(null), 4000)
+  }
+
+  const loadOrders = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('noore_store_orders') || '[]')
+      setOrders(saved)
+    } catch {
+      setOrders([])
+    }
+  }
+
+  const handleUpdateOrderStatus = (orderNumber: string, newStatus: string) => {
+    try {
+      const updated = orders.map(ord => ord.orderNumber === orderNumber ? { ...ord, status: newStatus } : ord)
+      setOrders(updated)
+      localStorage.setItem('noore_store_orders', JSON.stringify(updated))
+      showNotification('success', `Order #${orderNumber} status updated to ${newStatus}`)
+    } catch (e: any) {
+      showNotification('error', 'Status update failed: ' + e.message)
+    }
+  }
+
+  const handleDeleteOrder = (orderNumber: string) => {
+    if (!confirm(`Are you sure you want to delete order #${orderNumber}?`)) return
+    try {
+      const updated = orders.filter(ord => ord.orderNumber !== orderNumber)
+      setOrders(updated)
+      localStorage.setItem('noore_store_orders', JSON.stringify(updated))
+      showNotification('success', `Order #${orderNumber} removed`)
+    } catch (e: any) {
+      showNotification('error', 'Delete failed: ' + e.message)
+    }
+  }
+
+  const handleCopyForMarkaz = (ord: AdminOrder) => {
+    const text = 
+      `Customer: ${ord.customer.name}\n` +
+      `Phone: ${ord.customer.phone}\n` +
+      `City: ${ord.customer.city}\n` +
+      `Address: ${ord.customer.address}\n\n` +
+      `Ordered Items:\n` +
+      ord.items.map(it => `• ${it.name} (Qty: ${it.quantity}) - SKU: ${it.sku || 'N/A'}`).join('\n') +
+      `\n\nTotal COD: Rs. ${ord.grandTotal.toLocaleString()}`
+
+    navigator.clipboard.writeText(text)
+    setCopiedOrderId(ord.orderNumber)
+    showNotification('success', `Order #${ord.orderNumber} details copied for Markaz!`)
+    setTimeout(() => setCopiedOrderId(null), 3000)
+  }
+
+  const handleWhatsAppCustomer = (ord: AdminOrder) => {
+    let cleanPhone = ord.customer.phone.replace(/[^0-9]/g, '')
+    if (cleanPhone.startsWith('0')) cleanPhone = '92' + cleanPhone.slice(1)
+    const msg = encodeURIComponent(
+      `Assalam-o-Alaikum ${ord.customer.name}! 👋\n\n` +
+      `Noore Beauty & Jewels se aapka order *#${ord.orderNumber}* receive hua hai:\n\n` +
+      ord.items.map(it => `• ${it.name} (Qty: ${it.quantity}) - Rs. ${(it.price * it.quantity).toLocaleString()}`).join('\n') +
+      `\n\nTotal: Rs. ${ord.grandTotal.toLocaleString()} (Cash on Delivery)\n` +
+      `Delivery Address: ${ord.customer.address}, ${ord.customer.city}\n\n` +
+      `Kya aapka order confirm hai taake hum parcel dispatch kar dein? Please YES likh kar reply karein. Shukriya! ✨`
+    )
+    window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank')
   }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -414,7 +505,21 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation Tabs */}
         <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-8">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => {
+                setActiveTab('orders')
+                loadOrders()
+              }}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                activeTab === 'orders'
+                  ? 'bg-primary-600 text-white shadow-md'
+                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+              }`}
+            >
+              <ShoppingBag className="w-4 h-4" />
+              Customer Orders ({orders.length})
+            </button>
             <button
               onClick={() => {
                 setActiveTab('list')
@@ -446,15 +551,184 @@ export default function AdminDashboard() {
           </div>
 
           <button
-            onClick={loadProducts}
+            onClick={() => {
+              loadProducts()
+              loadOrders()
+            }}
             disabled={loading}
             className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 font-semibold p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            title="Refresh database"
+            title="Refresh database and orders"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
         </div>
+
+        {/* ================= TAB 0: ORDERS MANAGEMENT ================= */}
+        {activeTab === 'orders' && (
+          <div className="space-y-6">
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <ShoppingBag className="w-5 h-5 text-primary-600" /> Customer Orders Management
+                </h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Website se aane walay orders yahan live show hotay hain. 1-Click se customer ko WhatsApp karein ya Markaz ke liye copy karein.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-primary-800 bg-primary-50 border border-primary-200 px-3 py-1.5 rounded-xl">
+                  Total Orders: {orders.length}
+                </span>
+              </div>
+            </div>
+
+            {orders.length === 0 ? (
+              <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 p-8">
+                <ShoppingBag className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <h3 className="text-base font-bold text-gray-800 mb-1">Abhi tak koi order nahi aaya</h3>
+                <p className="text-xs text-gray-500 max-w-md mx-auto">
+                  Jab koi customer website se order confirm karega, to uska complete address, phone number aur items yahan 1-click details ke sath nazar aayenge!
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {orders.map((ord) => (
+                  <div
+                    key={ord.orderNumber}
+                    className="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-gray-100 hover:border-primary-200 transition-all"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4 mb-4">
+                      <div>
+                        <div className="flex items-center gap-2.5">
+                          <span className="font-mono font-bold text-base text-primary-700 bg-primary-50 px-2.5 py-0.5 rounded-lg border border-primary-200">
+                            #{ord.orderNumber}
+                          </span>
+                          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                            ord.status === 'Delivered'
+                              ? 'bg-green-100 text-green-700'
+                              : ord.status === 'Dispatched'
+                              ? 'bg-blue-100 text-blue-700'
+                              : ord.status === 'Confirmed'
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {ord.status || 'Pending'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-gray-400 mt-1">
+                          {new Date(ord.date).toLocaleString('en-PK', { timeZone: 'Asia/Karachi' })}
+                        </p>
+                      </div>
+
+                      {/* Quick Action Buttons */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* WhatsApp Customer */}
+                        <button
+                          onClick={() => handleWhatsAppCustomer(ord)}
+                          className="inline-flex items-center gap-1.5 bg-green-500 hover:bg-green-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-sm hover:scale-105 transition-all"
+                          title="Open WhatsApp with prefilled confirmation message"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          WhatsApp Customer
+                        </button>
+
+                        {/* Copy for Markaz */}
+                        <button
+                          onClick={() => handleCopyForMarkaz(ord)}
+                          className="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-sm hover:scale-105 transition-all"
+                          title="Copy details formatted for Markaz App"
+                        >
+                          {copiedOrderId === ord.orderNumber ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-green-400" />
+                              Copied!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              Copy for Markaz
+                            </>
+                          )}
+                        </button>
+
+                        {/* Status Selector */}
+                        <select
+                          value={ord.status || 'Pending'}
+                          onChange={(e) => handleUpdateOrderStatus(ord.orderNumber, e.target.value)}
+                          className="text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-2 text-gray-700 focus:ring-1 focus:ring-primary-500"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Dispatched">Dispatched</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+
+                        {/* Delete */}
+                        <button
+                          onClick={() => handleDeleteOrder(ord.orderNumber)}
+                          className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                          title="Delete Order"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Order Details Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+                      {/* Customer Info */}
+                      <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                        <h4 className="font-bold text-gray-800 mb-2 uppercase tracking-wider text-[11px] text-gray-500">
+                          👤 Customer & Delivery Address
+                        </h4>
+                        <div className="space-y-1 text-gray-700">
+                          <p><strong>Name:</strong> {ord.customer.name}</p>
+                          <p><strong>Phone:</strong> {ord.customer.phone}</p>
+                          <p><strong>City:</strong> {ord.customer.city}</p>
+                          <p><strong>Address:</strong> {ord.customer.address}</p>
+                          {ord.customer.notes && (
+                            <p className="text-amber-700 mt-1"><strong>Note:</strong> {ord.customer.notes}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Items & Payment */}
+                      <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex flex-col justify-between">
+                        <div>
+                          <h4 className="font-bold text-gray-800 mb-2 uppercase tracking-wider text-[11px] text-gray-500">
+                            📦 Ordered Items
+                          </h4>
+                          <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                            {ord.items.map((it, i) => (
+                              <div key={i} className="flex justify-between items-center text-gray-700">
+                                <span className="truncate">
+                                  • {it.name} <span className="text-gray-400 font-semibold">×{it.quantity}</span>
+                                </span>
+                                <span className="font-bold shrink-0 ml-2">
+                                  Rs. {(it.price * it.quantity).toLocaleString()}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="border-t border-gray-200 pt-2.5 mt-2 flex justify-between items-center font-bold text-gray-900 text-sm">
+                          <span>Total Amount (COD):</span>
+                          <span className="text-primary-800 font-mono text-base">
+                            Rs. {ord.grandTotal.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ================= TAB 1: ADD / EDIT PRODUCT FORM ================= */}
         {activeTab === 'add' && (
