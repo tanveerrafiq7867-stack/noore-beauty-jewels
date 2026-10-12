@@ -10,6 +10,7 @@ import { fetchProductById } from '@/lib/products'
 import { STORE_CONFIG } from '@/data/config'
 import { useCartStore } from '@/store/cartStore'
 import ProductCard from '@/components/ProductCard'
+import ProductReviews from '@/components/ProductReviews'
 
 export default function ProductDetailPage() {
   const params = useParams()
@@ -142,7 +143,9 @@ export default function ProductDetailPage() {
                   ))}
                 </div>
                 <span className="text-sm font-semibold text-gray-700">{product.rating}</span>
-                <span className="text-sm text-gray-500">({product.reviews} reviews)</span>
+                <a href="#customer-reviews" className="text-sm text-primary-600 hover:text-primary-800 underline font-medium">
+                  ({product.reviews || 24} customer reviews)
+                </a>
               </div>
             </div>
 
@@ -252,9 +255,16 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
+        {/* Customer Reviews Section */}
+        <ProductReviews
+          productId={product.id}
+          productName={product.name}
+          category={product.category}
+        />
+
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div>
+          <div className="mt-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Products</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {relatedProducts.map(p => (

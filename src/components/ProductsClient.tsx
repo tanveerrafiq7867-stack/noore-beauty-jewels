@@ -7,6 +7,7 @@ import ProductCard from '@/components/ProductCard'
 import { PRODUCTS, Product } from '@/data/products'
 import { fetchProducts } from '@/lib/products'
 import { CATEGORIES } from '@/data/config'
+import { LuxuryCategoryIcon } from '@/components/CategoryIcons'
 
 function ProductsContent() {
   const searchParams = useSearchParams()
@@ -147,22 +148,24 @@ function ProductsContent() {
           <aside className={`${showFilters ? 'block' : 'hidden'} sm:block w-full sm:w-64 shrink-0 space-y-6`}>
             {/* Categories */}
             <div className="bg-white rounded-2xl p-5 shadow-sm">
-              <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                📂 Categories
+              <h3 className="font-serif font-bold text-gray-900 mb-4 flex items-center gap-2">
+                Collections &amp; Categories
               </h3>
               <div className="space-y-1">
                 {CATEGORIES.map(cat => (
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
                       selectedCategory === cat.id
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-gray-600 hover:bg-gray-50'
+                        ? 'bg-amber-100/60 text-amber-900 font-semibold shadow-xs'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                   >
-                    <span>{cat.icon}</span>
-                    {cat.name}
+                    <span className="w-5 h-5 flex items-center justify-center shrink-0 text-amber-800">
+                      <LuxuryCategoryIcon categoryId={cat.id} className="w-4 h-4 stroke-current" />
+                    </span>
+                    <span className="truncate">{cat.name}</span>
                   </button>
                 ))}
               </div>
@@ -170,7 +173,7 @@ function ProductsContent() {
 
             {/* Price Range */}
             <div className="bg-white rounded-2xl p-5 shadow-sm">
-              <h3 className="font-bold text-gray-800 mb-4">💰 Price Range</h3>
+              <h3 className="font-serif font-bold text-gray-900 mb-4">Price Range (PKR)</h3>
               <div className="space-y-3">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Rs. {priceRange[0].toLocaleString()}</span>

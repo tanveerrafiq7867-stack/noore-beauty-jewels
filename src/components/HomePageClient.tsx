@@ -8,11 +8,140 @@ import ProductCard from '@/components/ProductCard'
 import { PRODUCTS, Product } from '@/data/products'
 import { fetchProducts } from '@/lib/products'
 import { CATEGORIES, STORE_CONFIG } from '@/data/config'
+import { LuxuryCategoryIcon } from '@/components/CategoryIcons'
+
+const HERO_SLIDES = [
+  {
+    tag: 'Royal Bridal Edition',
+    items: [
+      {
+        title: 'Kundan Bridal Choker Set',
+        price: 'Rs. 3,850',
+        badge: '✨ Best Seller',
+        image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&h=500&fit=crop',
+      },
+      {
+        title: 'Velvet Matte Lip Cream',
+        price: 'Rs. 850',
+        badge: '💄 Viral Pick',
+        image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&h=400&fit=crop',
+      },
+      {
+        title: '24K Gold Plated Bangles',
+        price: 'Rs. 2,400',
+        badge: '👑 Royal Pick',
+        image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&h=400&fit=crop',
+      },
+      {
+        title: 'Gold Glow Radiance Serum',
+        price: 'Rs. 1,650',
+        badge: '⭐ 4.9 Rating',
+        image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&h=500&fit=crop',
+      },
+    ],
+  },
+  {
+    tag: 'High Jewellery & Polki',
+    items: [
+      {
+        title: 'Emerald Chandelier Jhumkas',
+        price: 'Rs. 1,950',
+        badge: '💎 Handcrafted',
+        image: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?w=600&h=500&fit=crop',
+      },
+      {
+        title: 'Botanical Vitamin C Serum',
+        price: 'Rs. 1,450',
+        badge: '🌿 Natural Glow',
+        image: 'https://images.unsplash.com/photo-1608248597359-54523c14a408?w=600&h=400&fit=crop',
+      },
+      {
+        title: 'Solitaire Crystal Ring',
+        price: 'Rs. 1,200',
+        badge: '💍 Top Rated',
+        image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&h=400&fit=crop',
+      },
+      {
+        title: 'Pearl Choker Necklace',
+        price: 'Rs. 2,800',
+        badge: '✨ Exclusive',
+        image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=500&fit=crop',
+      },
+    ],
+  },
+  {
+    tag: 'Glamour & Luxury Cosmetics',
+    items: [
+      {
+        title: 'Pro Shimmer Eye Palette',
+        price: 'Rs. 1,850',
+        badge: '🎨 18 Shades',
+        image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=600&h=500&fit=crop',
+      },
+      {
+        title: 'Zirconia Crystal Bangle',
+        price: 'Rs. 2,100',
+        badge: '✨ 24K Shine',
+        image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&h=400&fit=crop',
+      },
+      {
+        title: 'Luxury Floral Eau de Parfum',
+        price: 'Rs. 2,650',
+        badge: '🌸 Long Lasting',
+        image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=600&h=400&fit=crop',
+      },
+      {
+        title: 'Royal Antique Jhumkay',
+        price: 'Rs. 1,750',
+        badge: '👑 Heritage',
+        image: 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?w=600&h=500&fit=crop',
+      },
+    ],
+  },
+  {
+    tag: 'Festive & Bridal Glow',
+    items: [
+      {
+        title: 'Bridal Maatha Patti & Teeka',
+        price: 'Rs. 2,250',
+        badge: '👰 Bridal Pick',
+        image: 'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=600&h=500&fit=crop',
+      },
+      {
+        title: 'Rose Lip & Cheek Tint',
+        price: 'Rs. 750',
+        badge: '💋 All-Day Stain',
+        image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=600&h=400&fit=crop',
+      },
+      {
+        title: 'Traditional Polki Mala Set',
+        price: 'Rs. 3,450',
+        badge: '💎 Hand Inlaid',
+        image: 'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=600&h=400&fit=crop',
+      },
+      {
+        title: 'Hyaluronic Hydrating Elixir',
+        price: 'Rs. 1,550',
+        badge: '💧 Dewy Finish',
+        image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&h=500&fit=crop',
+      },
+    ],
+  },
+]
 
 export default function HomePage() {
   const [productList, setProductList] = useState<Product[]>(PRODUCTS)
   const [currentPage, setCurrentPage] = useState(1)
+  const [heroSlide, setHeroSlide] = useState(0)
   const itemsPerPage = 4
+
+  // Auto rotate hero product pictures continuously
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroSlide(prev => (prev + 1) % HERO_SLIDES.length)
+    }, 5500)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     fetchProducts().then(data => {
@@ -88,51 +217,146 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Hero Image Grid with Animations */}
-          <div className="flex-1 grid grid-cols-2 gap-3 max-w-md lg:max-w-none">
-            <div className="space-y-3 animate-float">
-              <div className="h-52 rounded-2xl overflow-hidden shadow-lg animated-card">
-                <Image
-                  src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=300&fit=crop"
-                  alt="Jewellery"
-                  width={400}
-                  height={300}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-                  priority
-                />
+          {/* Hero Image Showcase with Dynamic Rotation */}
+          <div className="flex-1 max-w-md lg:max-w-none">
+            {/* Top Bar with Collection Tag & Slide Arrows */}
+            <div className="flex items-center justify-between mb-3 px-1">
+              <div className="inline-flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                <span className="text-xs font-serif font-bold text-amber-900 tracking-wider uppercase">
+                  Featured: {HERO_SLIDES[heroSlide].tag}
+                </span>
               </div>
-              <div className="h-36 rounded-2xl overflow-hidden shadow-lg animated-card">
-                <Image
-                  src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=200&fit=crop"
-                  alt="Beauty Makeup"
-                  width={400}
-                  height={200}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-                  priority
-                />
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setHeroSlide(prev => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1))}
+                  className="w-7 h-7 rounded-full bg-white/80 hover:bg-white border border-gray-200 text-gray-700 flex items-center justify-center shadow-xs hover:scale-105 transition-all text-xs"
+                  aria-label="Previous Slide"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setHeroSlide(prev => (prev + 1) % HERO_SLIDES.length)}
+                  className="w-7 h-7 rounded-full bg-white/80 hover:bg-white border border-gray-200 text-gray-700 flex items-center justify-center shadow-xs hover:scale-105 transition-all text-xs"
+                  aria-label="Next Slide"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
-            <div className="space-y-3 pt-6 animate-float-delayed">
-              <div className="h-36 rounded-2xl overflow-hidden shadow-lg animated-card">
-                <Image
-                  src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&h=200&fit=crop"
-                  alt="Bangles"
-                  width={400}
-                  height={200}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-                  priority
-                />
+
+            {/* Rotating 4-Image Grid with Animation */}
+            <div className="grid grid-cols-2 gap-3 transition-opacity duration-700">
+              {/* Col 1 */}
+              <div className="space-y-3 animate-float">
+                {/* Item 0 */}
+                <Link
+                  href="/products"
+                  className="group relative block h-52 rounded-2xl overflow-hidden shadow-lg animated-card border border-amber-100"
+                >
+                  <Image
+                    src={HERO_SLIDES[heroSlide].items[0].image}
+                    alt={HERO_SLIDES[heroSlide].items[0].title}
+                    width={400}
+                    height={300}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    priority
+                  />
+                  <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-amber-900 px-2 py-0.5 rounded-full shadow-sm">
+                    {HERO_SLIDES[heroSlide].items[0].badge}
+                  </div>
+                  <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-black/60 backdrop-blur-md rounded-xl px-2.5 py-1.5 text-white flex items-center justify-between text-xs">
+                    <span className="font-medium truncate text-[11px]">{HERO_SLIDES[heroSlide].items[0].title}</span>
+                    <span className="font-bold text-amber-300 text-[11px] ml-1 shrink-0">{HERO_SLIDES[heroSlide].items[0].price}</span>
+                  </div>
+                </Link>
+
+                {/* Item 1 */}
+                <Link
+                  href="/products"
+                  className="group relative block h-36 rounded-2xl overflow-hidden shadow-lg animated-card border border-amber-100"
+                >
+                  <Image
+                    src={HERO_SLIDES[heroSlide].items[1].image}
+                    alt={HERO_SLIDES[heroSlide].items[1].title}
+                    width={400}
+                    height={200}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    priority
+                  />
+                  <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-amber-900 px-2 py-0.5 rounded-full shadow-sm">
+                    {HERO_SLIDES[heroSlide].items[1].badge}
+                  </div>
+                  <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-black/60 backdrop-blur-md rounded-xl px-2.5 py-1.5 text-white flex items-center justify-between text-xs">
+                    <span className="font-medium truncate text-[11px]">{HERO_SLIDES[heroSlide].items[1].title}</span>
+                    <span className="font-bold text-amber-300 text-[11px] ml-1 shrink-0">{HERO_SLIDES[heroSlide].items[1].price}</span>
+                  </div>
+                </Link>
               </div>
-              <div className="h-52 rounded-2xl overflow-hidden shadow-lg animated-card">
-                <Image
-                  src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&h=300&fit=crop"
-                  alt="Skincare Serum"
-                  width={400}
-                  height={300}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-                  priority
-                />
+
+              {/* Col 2 */}
+              <div className="space-y-3 pt-6 animate-float-delayed">
+                {/* Item 2 */}
+                <Link
+                  href="/products"
+                  className="group relative block h-36 rounded-2xl overflow-hidden shadow-lg animated-card border border-amber-100"
+                >
+                  <Image
+                    src={HERO_SLIDES[heroSlide].items[2].image}
+                    alt={HERO_SLIDES[heroSlide].items[2].title}
+                    width={400}
+                    height={200}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    priority
+                  />
+                  <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-amber-900 px-2 py-0.5 rounded-full shadow-sm">
+                    {HERO_SLIDES[heroSlide].items[2].badge}
+                  </div>
+                  <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-black/60 backdrop-blur-md rounded-xl px-2.5 py-1.5 text-white flex items-center justify-between text-xs">
+                    <span className="font-medium truncate text-[11px]">{HERO_SLIDES[heroSlide].items[2].title}</span>
+                    <span className="font-bold text-amber-300 text-[11px] ml-1 shrink-0">{HERO_SLIDES[heroSlide].items[2].price}</span>
+                  </div>
+                </Link>
+
+                {/* Item 3 */}
+                <Link
+                  href="/products"
+                  className="group relative block h-52 rounded-2xl overflow-hidden shadow-lg animated-card border border-amber-100"
+                >
+                  <Image
+                    src={HERO_SLIDES[heroSlide].items[3].image}
+                    alt={HERO_SLIDES[heroSlide].items[3].title}
+                    width={400}
+                    height={300}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    priority
+                  />
+                  <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-amber-900 px-2 py-0.5 rounded-full shadow-sm">
+                    {HERO_SLIDES[heroSlide].items[3].badge}
+                  </div>
+                  <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-black/60 backdrop-blur-md rounded-xl px-2.5 py-1.5 text-white flex items-center justify-between text-xs">
+                    <span className="font-medium truncate text-[11px]">{HERO_SLIDES[heroSlide].items[3].title}</span>
+                    <span className="font-bold text-amber-300 text-[11px] ml-1 shrink-0">{HERO_SLIDES[heroSlide].items[3].price}</span>
+                  </div>
+                </Link>
               </div>
+            </div>
+
+            {/* Slide Indicators / Navigation Dots */}
+            <div className="flex items-center justify-center gap-2 mt-4">
+              {HERO_SLIDES.map((slide, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setHeroSlide(idx)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    heroSlide === idx ? 'w-8 bg-amber-700' : 'w-2 bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Slide ${idx + 1}: ${slide.tag}`}
+                />
+              ))}
+              <span className="text-[11px] font-medium text-gray-500 ml-1">
+                {heroSlide + 1} of {HERO_SLIDES.length}
+              </span>
             </div>
           </div>
         </div>
@@ -158,24 +382,31 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===== CATEGORIES ===== */}
-      <section className="py-16 px-4 bg-gray-50">
+      {/* ===== LUXURY CATEGORIES ===== */}
+      <section className="py-16 px-4 bg-gradient-to-b from-white via-amber-50/20 to-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="section-title">Shop by Category</h2>
-            <p className="section-subtitle">Explore our curated collections of jewellery and beauty essentials</p>
+            <span className="text-xs uppercase tracking-widest font-semibold text-amber-700 bg-amber-50 border border-amber-200/60 px-3.5 py-1 rounded-full inline-block mb-2">
+              Haute Joaillerie &amp; Beauty
+            </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-gray-900 tracking-tight">
+              Shop by Category
+            </h2>
+            <p className="text-sm text-gray-500 mt-2 max-w-lg mx-auto">
+              Curated collections of exquisite bridal jewellery, fine accessories, and premium skincare
+            </p>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
             {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
               <Link
                 key={cat.id}
                 href={`/products?category=${cat.id}`}
-                className="flex flex-col items-center gap-2 p-4 bg-white rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 group border border-transparent hover:border-primary-200"
+                className="flex flex-col items-center gap-2.5 p-4 bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group border border-gray-100 hover:border-amber-300 text-center"
               >
-                <span className="text-3xl group-hover:scale-125 transition-transform duration-300">
-                  {cat.icon}
-                </span>
-                <span className="text-xs font-semibold text-gray-700 text-center leading-tight group-hover:text-primary-600 transition-colors">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-50 via-rose-50/30 to-amber-100/40 border border-amber-200/80 flex items-center justify-center text-amber-800 shadow-[0_2px_8px_rgba(217,119,6,0.08)] group-hover:scale-110 group-hover:border-amber-400 group-hover:shadow-[0_4px_16px_rgba(217,119,6,0.22)] group-hover:bg-amber-100/40 transition-all duration-300">
+                  <LuxuryCategoryIcon categoryId={cat.id} className="w-7 h-7 stroke-amber-800 group-hover:stroke-amber-950 transition-colors" />
+                </div>
+                <span className="text-xs font-serif font-semibold text-gray-800 group-hover:text-amber-800 transition-colors leading-tight">
                   {cat.name}
                 </span>
               </Link>
