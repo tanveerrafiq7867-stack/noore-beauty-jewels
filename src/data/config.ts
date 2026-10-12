@@ -16,7 +16,7 @@ export const STORE_CONFIG = {
   address: "Bahawalpur, Pakistan",
 
   // Social media (ready to be updated anytime)
-  instagram: "https://instagram.com",
+  instagram: "https://www.instagram.com/noorebeauty.jewels",
   facebook: "https://facebook.com",
 
   // Currency
